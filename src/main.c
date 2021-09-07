@@ -14,12 +14,12 @@ int numeroPrimo(num){
 }    
 
 int main(){
-    int num1, num2, checPrimo;
+    int p, q, checPrimo, n, e;
 
     numPrimo1:
     printf("Digite o primeiro numero primo da chave publica: ");
-    scanf("%d", &num1);
-    checPrimo = numeroPrimo(num1);
+    scanf("%d", &p);
+    checPrimo = numeroPrimo(p);
     
     if(checPrimo == 0){
         printf("\nNumero digitadao nao eh primo\n");
@@ -28,13 +28,15 @@ int main(){
 
     numPrimo2:
     printf("Digite o segundo numero primo da chave publica: ");
-    scanf("%d", &num2);
-    checPrimo = numeroPrimo(num2);
+    scanf("%d", &q);
+    checPrimo = numeroPrimo(q);
     
     if(checPrimo == 0){
         printf("\nNumero digitadao nao eh primo\n");
         goto numPrimo2;
     }
 
+    n = p * q;
+    e = (p - 1) * (q - 1); //Não tenho certeza se esse e equivale a (p-1)*(q-1). Temos de revisar
     
     }
