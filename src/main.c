@@ -37,7 +37,7 @@ int chavesPublicas(){
         goto expoente;
     }
 
-    printf("\np = %d\nq = %d\nn = %d\ne = %d\n", p, q, n, e);
+    printf("\np = %d\nq = %d\nn = %d\ne = %d\n", p, q, n, e); //printf apenas pra saber se os numeros estão sendo processados corretamente
     
     return 0;
 }
@@ -66,11 +66,10 @@ int euclides(int a, int b){
     resto = a % b;
     
     if(resto != 0){
-        euclides(b, resto);
-    }else{
-        return b;
+       return euclides(b, resto);
     }
-    return 0;
+    
+    return b;
 }
 
 //Verifica se um número é primo
@@ -79,13 +78,13 @@ int numeroPrimo(int num){
     if (num != 1){
         for(int i = 2; i < num; i++){
             if(num % i == 0 && num != i){
+                printf("%d\n", i);
                 return 0;
             }
         }
     }else{
         return 1;
     }
-    return 0;
 }    
 
 int main(){
