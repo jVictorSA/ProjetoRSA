@@ -92,8 +92,8 @@ int numeroPrimo(int num){
         return 1;
     }
 }    
-int criptografar (){
 
+int criptografar (){
     char letra;
     int num;
     char alfabeto[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
@@ -102,18 +102,21 @@ int criptografar (){
     for(int i = 0;i < 28; i++){
 
         if(letra == alfabeto[i]||letra == alfabetomin[i]){
-
             num = i+2;
-
         }
-
     }
-
-    printf("%d", num);
-
     return 0;
 
 }
+ int frase (){
+        char frase[25];
+
+        printf("Digite a mensagem: \n");
+
+        gets(frase);
+
+        printf("%s", frase);
+    }
 
 //Salva as chaves em um arquivo txt
 void SalvaEmTxt(int *chave, int a){
