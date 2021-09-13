@@ -5,11 +5,11 @@ O argumento *chaves é necessário para retornar as chaves publicas
 em um array, forma mais víavel que achei pra retornar a chave para
 a criação do arquivo .txt
 */
-int chavesPublicas(int *chaves[2]){    
+int chavesPublicas(int *chaves){    
     int p, q, checPrimo, n, e;
 
     numPrimo1:
-    printf("Digite o primeiro numero primo da chave publica: ");
+    printf("\nDigite o primeiro numero primo da chave publica: ");
     scanf("%d", &p);
     checPrimo = numeroPrimo(p);
     
@@ -34,11 +34,11 @@ int chavesPublicas(int *chaves[2]){
     expoente:
     printf("\nDigite um numero que seja coprimo a (p-1)*(q-1) para ser o expoente e: ");
     scanf("%d", &e);
-    
+    printf("\n");
     //e = expoenteE(e, p, q); Antiga implementação
     chaves[1] = expoenteE(e, p, q); // armazena a chave e no par chaves
 
-    if(e == 0){
+    if(chaves[1] == 0){
         printf("\nNumero digitado nao eh coprimo a (p-1)*(q-1)!\n");
         goto expoente;
     }
@@ -93,11 +93,62 @@ int numeroPrimo(int num){
     }
 }    
 
-int main(){
-    int print[2]; // variável que recebe as chaves públicas
+//Salva as chaves em um arquivo txt
+void SalvaEmTxt(int *chave, int a){
+    FILE *pont_arq; //variavel que cria o aqrquivo txt
 
-    printf("Seja bem vindo ao nosso RSA!!\n\n");
-    chavesPublicas(&print);
+    switch(a) //switch para a cria��o dos nomes de cada pasta
+    {
+    case 1: // caso a o��o seja a chave publica
+        pont_arq = fopen("arquivo_chavePublica.txt", "w");
+        break;
+    case 2: // caso a op��o seja a criptografia
+        pont_arq = fopen("arquivo_chaveCripto.txt", "w");
+        break;
+    case 3: // caso a op��o seja a descriptografia
+        pont_arq = fopen("arquivo_chaveDescripto.txt", "w");
+        break;
+    }
+
+    if(pont_arq == NULL) // condi��o se n�o tiver valor na chave
+    {
+        printf("\nErro na abertura do arquivo!\n");
+        return 1;
+    }
+
+    fprintf(pont_arq, "%d\t%d\n", chave[0], chave[1]); // adiciona o valor da cahave ao arquivo
+
+    fclose(pont_arq); // fecha o arquivo
+
+}
+
+int main(){
+    int chavesPub[2], selecao; // variável que recebe as chaves públicas
+
+    printf("Seja bem vindo ao nosso RSA!!\n");
+    inicio:
+    printf("\nDigite 1 para gerar chaves publicas\n");
+    printf("Digite 2 para encriptar uma mensagem\n");
+    printf("Digite 3 para desencriptar uma mensagem\n");
+    printf("Note que quaisquer digitos diferentes de 1, 2 e 3 nao serao aceitos!!\n\n");
+    printf("Selecione a operacao desejada: ");
+    scanf("%d", &selecao);
+
+    switch(selecao){ //switch para a cria��o dos nomes de cada pasta
+    case 1: 
+        chavesPublicas(&chavesPub);
+        SalvaEmTxt(&chavesPub, selecao);
+        break;
+    case 2: // caso a op��o seja a criptografia
+        printf("2");
+        break;
+    case 3: // caso a op��o seja a descriptografia
+        printf("3");
+        break;
+    default:
+        printf("\nNumero invalido! Digite um numero entre 1 e 3!\n");
+        goto inicio;
+    }
 
     return 0;
 }
