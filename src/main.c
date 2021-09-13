@@ -151,7 +151,6 @@ int frase (){
     return 0;
 }
 
-
 //converte um numero decimal para binário, no caso, converte o expoente para sua representação binária
 int convBin(int deci, int *binario){
 
@@ -199,6 +198,32 @@ int expMod(int exp, int base, int mod, int result){
         return (expMod((exp/2), base, mod, result) % mod) * (expMod((exp/2), base, mod, result)) % mod;
     }
 }
+
+int criptografar (){
+    char letra;
+    int num;
+    char alfabeto[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
+    char alfabetomin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '};
+    scanf("%c", &letra);
+    for(int i = 0;i < 28; i++){
+
+        if(letra == alfabeto[i]||letra == alfabetomin[i]){
+            num = i+2;
+        }
+    }
+    return 0;
+}
+
+ int frase (){
+        char frase[25];
+
+        printf("Digite a mensagem: \n");
+
+        gets(frase);
+
+        printf("%s", frase);
+ }
+
 
 //Salva as chaves em um arquivo txt
 void SalvaEmTxt(int *chave, int a){
