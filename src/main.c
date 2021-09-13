@@ -114,7 +114,17 @@ int criptografar (){
     return 0;
 
 }
+ int frase (){
 
+        char frase[25];
+
+        printf("Digite a mensagem: \n");
+
+        gets(frase);
+
+        printf("%s", frase);
+
+    }
 int main(){
     int print[2]; // variável que recebe as chaves públicas
 
