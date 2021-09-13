@@ -1,4 +1,18 @@
 #include <stdio.h>
+#include <string.h>
+#include <math.h>
+
+void SalvaEmTxt(int *chave, int a);
+int chavesPublicas(int *chaves);
+int expoenteE(int e, int p, int q);
+int euclides(int numerador, int divisor);
+char criptografar (char letra, int chaveN, int *chaveE);
+int numeroPrimo(int num);
+int frase ();
+int convBin(int deci, int *binario);
+int expModRap(int base, int mod, int *exp);
+int expMod( int exp,  int base,  int mod, int result);
+
 
 /*Gerar chave (N, E), usando dois primos P e Q
 O argumento *chaves é necessário para retornar as chaves publicas 
@@ -28,22 +42,19 @@ int chavesPublicas(int *chaves){
         goto numPrimo2;
     }
 
-    //n = p * q; Antiga implementação
     chaves[0] = p * q; //armazena a chave n no par chaves
     
     expoente:
     printf("\nDigite um numero que seja coprimo a (p-1)*(q-1) para ser o expoente e: ");
     scanf("%d", &e);
     printf("\n");
-    //e = expoenteE(e, p, q); Antiga implementação
+    
     chaves[1] = expoenteE(e, p, q); // armazena a chave e no par chaves
 
     if(chaves[1] == 0){
         printf("\nNumero digitado nao eh coprimo a (p-1)*(q-1)!\n");
         goto expoente;
     }
-
-    //printf("\np = %d\nq = %d\nn = %d\ne = %d\n", p, q, n, e); printf apenas pra saber se os numeros estão sendo processados corretamente
     
     return chaves; //retorna o vetor chaves
 }
@@ -67,15 +78,15 @@ int expoenteE(int e, int p, int q){
 }
 
 //Calcula o mdc entre a e b
-int euclides(int a, int b){ 
+int euclides(int numerador, int divisor){ 
     int resto;       
-    resto = a % b;
+    resto = numerador % divisor;
     
     if(resto != 0){
-       return euclides(b, resto);
+       return euclides(divisor, resto);
     }
     
-    return b;
+    return divisor;
 }
 
 //Verifica se um número é primo
@@ -93,6 +104,101 @@ int numeroPrimo(int num){
     }
 }    
 
+char criptografar (char letra, int chaveN, int *chaveE){
+    unsigned long long int num;
+    char alfabetoMasc[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
+    char alfabetoMin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '};
+    //printf("\n%d\n", chaveE[1]);
+    for(int i = 0; i < 28; i++){
+        if(letra == alfabetoMasc[i] || letra == alfabetoMin[i]){
+            num = i + 2;
+            //printf("%llu conversao e mod: %d\n", num, chaveN);
+            num = expModRap(num, chaveN, &chaveE);
+            //printf("%llu conversao mod", num);
+        }
+    }
+    
+    return num;
+}
+
+//Recebe a mensagem a ser encriptada
+int frase (){
+    char frase[25], lixo;
+    int tFrase, chaveN, chaveE, *expBin[8];
+    printf("");
+    scanf("%c", &lixo);//Armazena o valor da tecla enter, pressionada durante a seleção da criptografia
+    printf("\nDigite a mensagem:");
+    gets(frase);
+    
+    tFrase = strlen(frase);
+    int fraseCripto[tFrase]; //Vetor que vai receber os valores dos caracteres cifrados
+
+    printf("\nAgora digite a chave publica recebebida.\nExemplo: 871 57\n\nDigite a chave publica: ");
+    scanf("%d %d", &chaveN, &chaveE);
+
+    *expBin = convBin(chaveE, &expBin);
+    printf("\n%d %d %d %d %d %d %d %d\n", expBin[0], expBin[1], expBin[2], expBin[3], expBin[4], expBin[5], expBin[6], expBin[7]);
+
+    printf("Tamanho da string: %d\n\n", tFrase);
+    for (int i = 0; i < tFrase; i++){
+        fraseCripto[i] = criptografar(frase[i], chaveN, &expBin);
+    }
+
+    for(int i = 0; i < tFrase; i++){
+        printf("%d string\n", fraseCripto[i]);
+    }
+
+    return 0;
+}
+
+//converte um numero decimal para binário, no caso, converte o expoente para sua representação binária
+int convBin(int deci, int *binario){
+
+    for (int i = 0; i < 8; i++){
+        if (deci % 2 == 0){
+            binario[i] = 0;
+        }else{
+            binario[i] = 1;
+        }
+        deci /= 2;
+    }
+    return *binario;
+}
+
+//faz a exponenciação modular rápida
+int expModRap(int base, int mod, int *exp){
+    int parcial = 1, mult[8], result;
+
+    //printf("%d mod\n", mod);
+    //printf("\n%d\n", exp[1]);
+
+    for(int i = 0; i < 9; i++){
+        mult[i] = 0;
+        if(exp[i] == 1){
+        //printf("ola");
+            mult[i] = pow(2, i);
+            parcial *= expMod(mult[i], base, mod, 1);
+            //printf("%llu\n", parcial);
+        }
+    }
+
+    result = parcial % mod;
+
+    //printf("%llu e %llu\n", result, parcial);
+
+    return result;
+}
+
+//calcula a exponenciação de um numero
+int expMod(int exp, int base, int mod, int result){
+    
+    if(exp == 1){
+        return (base * exp) % mod;
+    }else{
+        return (expMod((exp/2), base, mod, result) % mod) * (expMod((exp/2), base, mod, result)) % mod;
+    }
+}
+
 int criptografar (){
     char letra;
     int num;
@@ -106,8 +212,8 @@ int criptografar (){
         }
     }
     return 0;
-
 }
+
  int frase (){
         char frase[25];
 
@@ -116,13 +222,14 @@ int criptografar (){
         gets(frase);
 
         printf("%s", frase);
-    }
+ }
+
 
 //Salva as chaves em um arquivo txt
 void SalvaEmTxt(int *chave, int a){
     FILE *pont_arq; //variavel que cria o aqrquivo txt
 
-    switch(a) //switch para a cria��o dos nomes de cada pasta
+    switch(a) //switch para a criacao dos nomes de cada pasta
     {
     case 1: // caso a o��o seja a chave publica
         pont_arq = fopen("arquivo_chavePublica.txt", "w");
@@ -160,14 +267,15 @@ int main(){
     scanf("%d", &selecao);
 
     switch(selecao){ //switch para a cria��o dos nomes de cada pasta
-    case 1: 
+    case 1: //Caso a opcao seja gerar chaves publicas
         chavesPublicas(&chavesPub);
         SalvaEmTxt(&chavesPub, selecao);
         break;
-    case 2: // caso a op��o seja a criptografia
-        printf("2");
+    case 2: // caso a opcao seja a criptografia
+        frase();
+        //SalvaEmTxt()
         break;
-    case 3: // caso a op��o seja a descriptografia
+    case 3: // caso a opcao seja a descriptografia
         printf("3");
         break;
     default:
