@@ -96,24 +96,27 @@ int numeroPrimo(int num){
 int criptografar (){
     char letra;
     int num;
-    char alfabeto[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
-    char alfabetomin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '};
+    char alfabeto[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '}; //vetor com letras maiúsculas
+    char alfabetomin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '}; //vetor com letras minúsculas
     scanf("%c", &letra);
-    for(int i = 0;i < 28; i++){
+    for(int i = 0;i < 28; i++){ //estrutura de repetição para percorrer o vetor e incrementar de acordo com condição abaixo
 
-        if(letra == alfabeto[i]||letra == alfabetomin[i]){
+        //caso a variavel tipo "char" letra obedeça a condição informada, o primeiro elemento do vetor alfabeto e alfabetomin valerá 2, como exigido no projeto.
+        if(letra == alfabeto[i]||letra == alfabetomin[i]){ 
             num = i+2;
         }
     }
     return 0;
 
 }
- int frase (){
-        char frase[25];
+int frase (){
+        char frase[25]; //vetor frase, criado com o intuito de criptografar as frases.
 
         printf("Digite a mensagem: \n");
 
-        gets(frase);
+        gets(frase); //pede ao usuário que entre em uma string, que será armazenada na string "frase".
+
+        //criado para fins de teste na encriptação de frases.
 
         printf("%s", frase);
     }
