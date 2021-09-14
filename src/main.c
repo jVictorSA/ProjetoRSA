@@ -7,12 +7,19 @@ int chavesPublicas(int *chaves);
 int expoenteE(int e, int p, int q);
 int euclides(int numerador, int divisor);
 int criptografar (char letra, int chaveN, int *chaveE);
+int descriptografar();
+int chavePrivada(int d, int n);
 int numeroPrimo(int num);
 int frase ();
 int convBin(int deci, int *binario);
 int expModRap(int base, int mod, int *exp);
 int expMod( int exp,  int base,  int mod, int result);
 
+//GLOBAIS
+char alfabetoMasc[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
+char alfabetoMin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '};
+
+int tamanhoString = 45;
 
 /*Gerar chave (N, E), usando dois primos P e Q
 O argumento *chaves é necessário para retornar as chaves publicas 
@@ -32,10 +39,10 @@ int chavesPublicas(int *chaves){
         goto numPrimo1;
     }
 
-    numPrimo2:
-    printf("\nDigite o segundo numero primo da chave publica: ");
+   printf("\nDigite o segundo numero primo da chave publica: ");
     scanf("%d", &q);
     checPrimo = numeroPrimo(q);
+     numPrimo2:
     
     if(checPrimo == 0){
         printf("\nNumero digitado nao eh primo\n");
@@ -43,16 +50,17 @@ int chavesPublicas(int *chaves){
     }
 
     chaves[0] = p * q; //armazena a chave n no par chaves
+	int z = (p-1)*(q-1);
     
     expoente:
-    printf("\nDigite um numero que seja coprimo a (p-1)*(q-1) para ser o expoente e: ");
+    printf("\nDigite um numero que seja coprimo a %d ([p-1]*[q-1]) para ser o expoente e: ", z);
     scanf("%d", &e);
     printf("\n");
     
     chaves[1] = expoenteE(e, p, q); // armazena a chave e no par chaves
 
     if(chaves[1] == 0){
-        printf("\nNumero digitado nao eh coprimo a (p-1)*(q-1)!\n");
+        printf("\nNumero digitado nao eh coprimo a %d!\n", z);
         goto expoente;
     }
     
@@ -106,8 +114,7 @@ int numeroPrimo(int num){
 
 int criptografar (char letra, int chaveN, int *chaveE){
     unsigned long long int num;
-    char alfabetoMasc[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
-    char alfabetoMin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '};
+    
     //printf("\n%d\n", chaveE[1]);
     for(int i = 0; i < 28; i++){
         if(letra == alfabetoMasc[i] || letra == alfabetoMin[i]){
@@ -121,9 +128,107 @@ int criptografar (char letra, int chaveN, int *chaveE){
     return num;
 }
 
+int descriptografar()
+{
+	int p, q, e, checPrimo;
+
+	printf("Digite dois primos p e q, e e (coprimo de (p-1)*(q-1)): \n");
+
+	numPrimo1:
+    scanf("%d", &p);
+    checPrimo = numeroPrimo(p);
+    
+    if(checPrimo == 0){
+        printf("\nNumero digitado nao eh primo. Digite um primo p: ");
+        goto numPrimo1;
+    }
+
+	printf("Digite um primo q\n");
+
+     numPrimo2:
+
+    scanf("%d", &q);
+    checPrimo = numeroPrimo(q);
+
+    if(checPrimo == 0){
+        printf("\nNumero digitado nao eh primo. Digite um primo q: ");
+        goto numPrimo2;
+    }
+
+	int z = (p-1)*(q-1);
+	int n = p*q;
+
+	if(z < 0) z*= -1;
+
+	expoente:
+    printf("\nDigite um numero que seja coprimo a %d ([p-1]*[q-1]) para ser o expoente e: ", z);
+    scanf("%d", &e);
+    printf("\n");
+
+	e = expoenteE(e, p, q);
+
+    if(e == 0){
+        printf("\nNumero digitado nao eh coprimo a %d!\n", z);
+        goto expoente;
+    }
+
+	int d;
+
+	//Enquanto e*d mod (p*q) for diferente de 1, continuar verificando até encontrar d
+	for(int i = 0; i < 99999; i++)
+	{
+		d = (e*i)%z;
+		
+		if(d == 1)
+		{
+			d = i;
+			break;
+		}
+	}
+
+	chavePrivada(d, n);
+}
+
+//Recebe e e n para calcular a chave privada e descriptografar a mensagem
+int chavePrivada(int d, int n)
+{	
+	int *dBin[16];
+	*dBin = convBin(151, &dBin);
+
+	int abc = abc + expModRap(151, n, &dBin);
+	abc = abc%n;
+	printf("%d\n", abc);
+	printf("%d\n", n);
+
+	char frase[tamanhoString], lixo;
+	int quant = 0;
+	//int tFrase = strlen(frase);
+	printf("Insira a quantidade de caracteres da mensagem: ");
+	scanf("%d", &quant);
+
+	int c_array[quant]; //ARRAY CRIPTOGRAFADO
+	int o_array[quant]; //ARRAY PRONTO PARA SER CONVERTIDO PARA LETRAS
+
+	printf("Agora insira a mensagem criptografada (Separada por espaco): ");
+	int numCache;
+
+	for(int i = 0; i < quant; i++)
+	{
+		scanf("%d", &c_array[i]);
+
+		numCache = 1000;
+		printf("numcache - %i\n", numCache);
+		printf("array - %i\n", c_array[i]);
+		printf("d - %i\n", d);
+		o_array[i] = numCache%n;
+
+		//printf("%d", o_array[i]);
+	}
+}
+
 //Recebe a mensagem a ser encriptada
 int frase (int * fraseCifrada){
-    char frase[45], lixo;
+    char frase[tamanhoString], lixo;
     int tFrase, chaveN, chaveE, *expBin[16];
     printf("");
     scanf("%c", &lixo);//Armazena o valor da tecla enter, pressionada durante a seleção da criptografia
@@ -216,7 +321,7 @@ void SalvaEmTxt(int *chave, int a){
     case 2: // caso a op��o seja a criptografia
         pont_arq = fopen("arquivo_chaveCripto.txt", "w");
 
-        for(int i = 0; i < 45; i++){
+        for(int i = 0; i < tamanhoString; i++){
             if (chave[i] != 0){
                 fprintf(pont_arq, "%d\t", chave[i]); // adiciona o valor da chave ao arquivo cripto
             }    
@@ -238,14 +343,13 @@ void SalvaEmTxt(int *chave, int a){
 }
 
 int main(){
-    int chavesPub[2], selecao, mensCifrada[45], mensDecifrada[45]; // variável que recebe as chaves públicas
+    int chavesPub[2], selecao, mensCifrada[tamanhoString], mensDecifrada[tamanhoString]; // variável que recebe as chaves públicas
 
-    for (int i = 0; i < 45; i++){
+    for (int i = 0; i < tamanhoString; i++){
         mensCifrada[i] = 0;
         mensDecifrada[i] = 0;
     }
     
-
     printf("Seja bem vindo ao nosso RSA!!\n");
     inicio:
     printf("\nDigite 1 para gerar chaves publicas\n");
@@ -265,7 +369,7 @@ int main(){
         SalvaEmTxt(&mensCifrada, selecao);
         break;
     case 3: // caso a opcao seja a descriptografia
-        printf("3");
+        descriptografar();
         break;
     default:
         printf("\nNumero invalido! Digite um numero entre 1 e 3!\n");
