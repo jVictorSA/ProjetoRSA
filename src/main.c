@@ -122,7 +122,7 @@ int criptografar (char letra, int chaveN, int *chaveE){
 }
 
 //Recebe a mensagem a ser encriptada
-int frase (){
+int frase (int * fraseCifrada){
     char frase[45], lixo;
     int tFrase, chaveN, chaveE, *expBin[16];
     printf("");
@@ -142,13 +142,14 @@ int frase (){
     printf("Tamanho da string: %d\n\n", tFrase);
     for (int i = 0; i < tFrase; i++){
         fraseCripto[i] = criptografar(frase[i], chaveN, &expBin);
+        fraseCifrada[i] = fraseCripto[i];
     }
 
     for(int i = 0; i < tFrase; i++){
         printf("%d string\n", fraseCripto[i]);
     }
 
-    return 0;
+    return fraseCifrada;
 }
 
 //converte um numero decimal para binário, no caso, converte o expoente para sua representação binária
@@ -207,9 +208,20 @@ void SalvaEmTxt(int *chave, int a){
     {
     case 1: // caso a o��o seja a chave publica
         pont_arq = fopen("arquivo_chavePublica.txt", "w");
+        
+        fprintf(pont_arq, "%d\t%d\n", chave[0], chave[1]); // adiciona o valor da chave ao arquivo das chaves
+        fclose(pont_arq); // fecha o arquivo
+
         break;
     case 2: // caso a op��o seja a criptografia
         pont_arq = fopen("arquivo_chaveCripto.txt", "w");
+
+        for(int i = 0; i < 45; i++){
+            if (chave[i] != 0){
+                fprintf(pont_arq, "%d\t", chave[i]); // adiciona o valor da chave ao arquivo cripto
+            }    
+        }
+
         break;
     case 3: // caso a op��o seja a descriptografia
         pont_arq = fopen("arquivo_chaveDescripto.txt", "w");
@@ -222,14 +234,17 @@ void SalvaEmTxt(int *chave, int a){
         return 1;
     }
 
-    fprintf(pont_arq, "%d\t%d\n", chave[0], chave[1]); // adiciona o valor da cahave ao arquivo
-
-    fclose(pont_arq); // fecha o arquivo
 
 }
 
 int main(){
-    int chavesPub[2], selecao; // variável que recebe as chaves públicas
+    int chavesPub[2], selecao, mensCifrada[45], mensDecifrada[45]; // variável que recebe as chaves públicas
+
+    for (int i = 0; i < 45; i++){
+        mensCifrada[i] = 0;
+        mensDecifrada[i] = 0;
+    }
+    
 
     printf("Seja bem vindo ao nosso RSA!!\n");
     inicio:
@@ -246,8 +261,8 @@ int main(){
         SalvaEmTxt(&chavesPub, selecao);
         break;
     case 2: // caso a opcao seja a criptografia
-        frase();
-        //SalvaEmTxt()
+        frase(mensCifrada);
+        SalvaEmTxt(&mensCifrada, selecao);
         break;
     case 3: // caso a opcao seja a descriptografia
         printf("3");
