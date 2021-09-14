@@ -6,7 +6,7 @@ void SalvaEmTxt(int *chave, int a);
 int chavesPublicas(int *chaves);
 int expoenteE(int e, int p, int q);
 int euclides(int numerador, int divisor);
-char criptografar (char letra, int chaveN, int *chaveE);
+int criptografar (char letra, int chaveN, int *chaveE);
 int numeroPrimo(int num);
 int frase ();
 int convBin(int deci, int *binario);
@@ -104,7 +104,7 @@ int numeroPrimo(int num){
     }
 }    
 
-char criptografar (char letra, int chaveN, int *chaveE){
+int criptografar (char letra, int chaveN, int *chaveE){
     unsigned long long int num;
     char alfabetoMasc[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
     char alfabetoMin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '};
@@ -123,8 +123,8 @@ char criptografar (char letra, int chaveN, int *chaveE){
 
 //Recebe a mensagem a ser encriptada
 int frase (){
-    char frase[25], lixo;
-    int tFrase, chaveN, chaveE, *expBin[8];
+    char frase[45], lixo;
+    int tFrase, chaveN, chaveE, *expBin[16];
     printf("");
     scanf("%c", &lixo);//Armazena o valor da tecla enter, pressionada durante a seleção da criptografia
     printf("\nDigite a mensagem:");
@@ -154,7 +154,7 @@ int frase (){
 //converte um numero decimal para binário, no caso, converte o expoente para sua representação binária
 int convBin(int deci, int *binario){
 
-    for (int i = 0; i < 8; i++){
+    for (int i = 0; i < 16; i++){
         if (deci % 2 == 0){
             binario[i] = 0;
         }else{
@@ -167,12 +167,12 @@ int convBin(int deci, int *binario){
 
 //faz a exponenciação modular rápida
 int expModRap(int base, int mod, int *exp){
-    int parcial = 1, mult[8], result;
+    int parcial = 1, mult[16], result;
 
     //printf("%d mod\n", mod);
     //printf("\n%d\n", exp[1]);
 
-    for(int i = 0; i < 9; i++){
+    for(int i = 0; i < 16; i++){
         mult[i] = 0;
         if(exp[i] == 1){
         //printf("ola");
@@ -198,32 +198,6 @@ int expMod(int exp, int base, int mod, int result){
         return (expMod((exp/2), base, mod, result) % mod) * (expMod((exp/2), base, mod, result)) % mod;
     }
 }
-
-int criptografar (){
-    char letra;
-    int num;
-    char alfabeto[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
-    char alfabetomin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '};
-    scanf("%c", &letra);
-    for(int i = 0;i < 28; i++){
-
-        if(letra == alfabeto[i]||letra == alfabetomin[i]){
-            num = i+2;
-        }
-    }
-    return 0;
-}
-
- int frase (){
-        char frase[25];
-
-        printf("Digite a mensagem: \n");
-
-        gets(frase);
-
-        printf("%s", frase);
- }
-
 
 //Salva as chaves em um arquivo txt
 void SalvaEmTxt(int *chave, int a){
