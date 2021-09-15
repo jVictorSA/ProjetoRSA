@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <math.h>
  
@@ -158,6 +159,7 @@ int criptografar (char letra, int chaveN, int *chaveE){
     }
  
     for(int i = 0; i < 28; i++){
+        letra = toupper(letra);
         if(letra == alfabetoMasc[i]){
             num = i + 2;
             num = expModRap(num, chaveN, &mult);
@@ -345,12 +347,8 @@ void SalvaEmTxt(int *chave, int a, char *message){
         pont_arq = fopen("arquivo_chaveCripto.txt", "w");
  
         for(int i = 0; i < tamanhoString; i++){
-            if (chave[i] != 0){
-                if(isalpha(chave[i]) == 0 && isblank(chave[i]) == 0) break; //PARAR for SE chave[i] NÃO FOR UMA LETRA
-
+            if (chave[i] != 0)
                 fprintf(pont_arq, "%d\t", chave[i]); // adiciona o valor da chave ao arquivo cripto
-            } 
-            fclose(pont_arq); 
         }
 
         printf("\nArquivo gravado com sucesso!\n\n");
