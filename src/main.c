@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
  
@@ -17,9 +18,47 @@ int expMod( int exp,  int base,  int mod, int result);
  
 //GLOBAIS
 char alfabetoMasc[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
-char alfabetoMin[27]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' '};
- 
 int tamanhoString = 45;
+
+int main(){
+    int chavesPub[2], selecao, mensCifrada[tamanhoString];
+    char mensDecifrada[tamanhoString]; // variável que recebe as chaves públicas
+ 
+    for (int i = 0; i < tamanhoString; i++){
+        mensCifrada[i] = 0;
+        mensDecifrada[i] = 0;
+    }
+ 
+    printf("Seja bem vindo ao nosso RSA!!\n");
+    inicio:
+    printf("\nDigite 1 para gerar chaves publicas\n");
+    printf("Digite 2 para encriptar uma mensagem\n");
+    printf("Digite 3 para desencriptar uma mensagem\n");
+    printf("Note que quaisquer digitos diferentes de 1, 2 e 3 nao serao aceitos!!\n\n");
+    printf("Selecione a operacao desejada: ");
+    scanf("%d", &selecao);
+ 
+    switch(selecao){ //switch para a criação dos nomes de cada pasta
+ 
+    case 1: //Caso a opcao seja gerar chaves publicas
+        chavesPublicas(&chavesPub);
+        SalvaEmTxt(&chavesPub, selecao, 0);
+        break;
+    case 2: // caso a opcao seja a criptografia
+        frase(mensCifrada);
+        SalvaEmTxt(&mensCifrada, selecao, 0);
+        break;
+    case 3: // caso a opcao seja a descriptografia
+        descriptografar(&mensDecifrada);
+        SalvaEmTxt(&mensDecifrada, selecao, &mensDecifrada);
+        break;
+    default:
+        printf("\nNumero invalido! Digite um numero entre 1 e 3!\n");
+        goto inicio;
+    }
+ 
+    return 0;
+}
  
 /*Gerar chave (N, E), usando dois primos P e Q
 O argumento *chaves é necessário para retornar as chaves publicas 
@@ -119,7 +158,7 @@ int criptografar (char letra, int chaveN, int *chaveE){
     }
  
     for(int i = 0; i < 28; i++){
-        if(letra == alfabetoMasc[i] || letra == alfabetoMin[i]){
+        if(letra == alfabetoMasc[i]){
             num = i + 2;
             num = expModRap(num, chaveN, &mult);
         }
@@ -132,8 +171,9 @@ int criptografar (char letra, int chaveN, int *chaveE){
 char descriptografar(char *mensDecifrada)
 {
     int p, q, e, checPrimo;
+    char aux[tamanhoString]; //String que recebe o conteúdo da descriptografia, afim de repassar para mensDecifrada
  
-    printf("Digite dois primos p e q, e e (coprimo de (p-1)*(q-1)): \n");
+    printf("Digite dois primos p e q\n");
  
     numPrimo1:
     scanf("%d", &p);
@@ -144,10 +184,8 @@ char descriptografar(char *mensDecifrada)
         goto numPrimo1;
     }
  
-    printf("Digite um primo q\n");
  
-     numPrimo2:
- 
+    numPrimo2:
     scanf("%d", &q);
     checPrimo = numeroPrimo(q);
  
@@ -179,19 +217,7 @@ char descriptografar(char *mensDecifrada)
     for(int i = 0; i < 99999; i++)
     {
         d = (e*i)%z;
- 
-        if(d == 1)
-        {
-            d = i;
-            break;
-        }
-    }
- 
-    char aux[tamanhoString]; //String que recebe o conteúdo da descriptografia, afim de repassar para mensDecifrada
- 
-    for (int i = 0; i < tamanhoString; i++)
-    {
-        aux[i] = mensDecifrada[i];
+        if(d == 1){d = i; break;}
     }
     
     chavePrivada(d, n, &aux);
@@ -204,31 +230,29 @@ char descriptografar(char *mensDecifrada)
 //Recebe e e n para calcular a chave privada e descriptografar a mensagem letra por letra
 char chavePrivada(int d, int n, char *mensDecifrada)
 {   
-    int *dBin[16];
-    *dBin = convBin(d, &dBin);
- 
-    unsigned long long int expModValue;
-    int quant = 0;
- 
-    printf("Insira a quantidade de caracteres da mensagem: ");
-    scanf("%d", &quant);
- 
-    int c_array[quant]; //ARRAY CRIPTOGRAFADO
-    int o_array[quant]; //ARRAY PRONTO PARA SER CONVERTIDO PARA LETRAS
+    int *dBin[16]; *dBin = convBin(d, &dBin);
+    int convertCounter = 0; //COUNTER PARA ADICIONAR AS LETRAS DESCRIPTOGRAFADAS AO ARRAY mensDecifrada
+    char c_array[tamanhoString]; //ARRAY CRIPTOGRAFADO
+    unsigned int expModValue;
  
     printf("Agora insira a mensagem criptografada (Separada por espaco): ");
-    int numCache;
- 
-    for(int i = 0; i < quant; i++)
+    scanf(" %[^\n]", c_array); //PEGA UMA STRING SEPARADA POR ESPAÇOS E ADICIONA À VARIÁVEL c_array
+    char *pointer = strtok(c_array, " "); //SEPARADOR; CONDIÇÃO PELA QUAL AS STRINGS SERÃO DIVIDIDAS EM SUBSTRINGS
+
+    while(pointer != NULL) //ENQUANTO strtok NÃO TIVER SEPARADO A STRING (MUDAR ENDEREÇO PARA NULL)
     {
-        scanf("%d", &c_array[i]);
- 
-        expModValue = expModRap(c_array[i], n, &dBin);
- 
-        mensDecifrada[i] = alfabetoMasc[expModValue-2];
- 
+        int toNumber = atoi(pointer); //CONVERTER STRING PARA INT
+        expModValue = expModRap(toNumber, n, &dBin); //EXPONENCIAÇÃO MODULAR RÁPIDA
+        mensDecifrada[convertCounter] = alfabetoMasc[expModValue-2];
+        pointer = strtok(NULL, " ");
+        convertCounter++;
     }
- 
+
+    printf("Mensagem descriptografada: ");
+    for(int i = 0; i < 13; i++)
+        printf("%c", mensDecifrada[i]);
+
+
     return mensDecifrada;
 }
  
@@ -322,8 +346,11 @@ void SalvaEmTxt(int *chave, int a, char *message){
  
         for(int i = 0; i < tamanhoString; i++){
             if (chave[i] != 0){
+                if(isalpha(chave[i]) == 0 && isblank(chave[i]) == 0) break; //PARAR for SE chave[i] NÃO FOR UMA LETRA
+
                 fprintf(pont_arq, "%d\t", chave[i]); // adiciona o valor da chave ao arquivo cripto
-            }    
+            } 
+            fclose(pont_arq); 
         }
 
         printf("\nArquivo gravado com sucesso!\n\n");
@@ -332,8 +359,11 @@ void SalvaEmTxt(int *chave, int a, char *message){
         pont_arq = fopen("arquivo_chaveDescripto.txt", "w");
  
         for(int i = 0; i < tamanhoString; i++){
-            fprintf(pont_arq, "%c", message[i]); // adiciona o valor da chave ao arquivo cripto 
+            if(isalpha(message[i]) == 0 && isblank(message[i]) == 0) break; //PARAR for SE message[i] NÃO FOR UMA LETRA
+            
+            fprintf(pont_arq, "%c", message[i]); // adiciona o valor da chave ao arquivo cripto
         }
+        fclose(pont_arq);
 
         printf("\nArquivo gravado com sucesso!\n\n");
         break;
@@ -345,44 +375,3 @@ void SalvaEmTxt(int *chave, int a, char *message){
         return 1;
     }
 }
- 
-int main(){
-    int chavesPub[2], selecao, mensCifrada[tamanhoString];
-    char mensDecifrada[tamanhoString]; // variável que recebe as chaves públicas
- 
-    for (int i = 0; i < tamanhoString; i++){
-        mensCifrada[i] = 0;
-        mensDecifrada[i] = 0;
-    }
- 
-    printf("Seja bem vindo ao nosso RSA!!\n");
-    inicio:
-    printf("\nDigite 1 para gerar chaves publicas\n");
-    printf("Digite 2 para encriptar uma mensagem\n");
-    printf("Digite 3 para desencriptar uma mensagem\n");
-    printf("Note que quaisquer digitos diferentes de 1, 2 e 3 nao serao aceitos!!\n\n");
-    printf("Selecione a operacao desejada: ");
-    scanf("%d", &selecao);
- 
-    switch(selecao){ //switch para a cria��o dos nomes de cada pasta
- 
-    case 1: //Caso a opcao seja gerar chaves publicas
-        chavesPublicas(&chavesPub);
-        SalvaEmTxt(&chavesPub, selecao, 0);
-        break;
-    case 2: // caso a opcao seja a criptografia
-        frase(mensCifrada);
-        SalvaEmTxt(&mensCifrada, selecao, 0);
-        break;
-    case 3: // caso a opcao seja a descriptografia
-        descriptografar(&mensDecifrada);
-        SalvaEmTxt(&mensDecifrada, selecao, &mensDecifrada);
-        break;
-    default:
-        printf("\nNumero invalido! Digite um numero entre 1 e 3!\n");
-        goto inicio;
-    }
- 
-    return 0;
-}
-
