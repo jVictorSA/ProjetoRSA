@@ -11,8 +11,8 @@ int descriptografar();
 int chavePrivada(int d, int n);
 int numeroPrimo(int num);
 int frase ();
-int convBin(int deci, int *binario);
-int expModRap(int base, int mod, int *exp);
+int convBin(int deci, int binario[]);
+int expModRap(int base, int mod, int exp[]);
 int expMod( int exp,  int base,  int mod, int result);
 
 //GLOBAIS
@@ -55,7 +55,6 @@ int chavesPublicas(int *chaves){
     expoente:
     printf("\nDigite um numero que seja coprimo a %d ([p-1]*[q-1]) para ser o expoente e: ", z);
     scanf("%d", &e);
-    printf("\n");
     
     chaves[1] = expoenteE(e, p, q); // armazena a chave e no par chaves
 
@@ -103,7 +102,7 @@ int numeroPrimo(int num){
     if (num != 1){
         for(int i = 2; i < num; i++){
             if(num % i == 0 && num != i){
-                printf("%d\n", i);
+                //printf("%d\n", i);
                 return 0;
             }
         }
@@ -113,15 +112,20 @@ int numeroPrimo(int num){
 }    
 
 int criptografar (char letra, int chaveN, int *chaveE){
-    unsigned long long int num;
-    
+    unsigned long long int num, parcial;
+    int mult[16];
+    char alfabetoMasc[27]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' '};
+
+    for(int i = 0; i < 16; i++){
+        //printf("%d ", chaveE[i]);
+        mult[i] = chaveE[i];
+    }
+
     //printf("\n%d\n", chaveE[1]);
     for(int i = 0; i < 28; i++){
         if(letra == alfabetoMasc[i] || letra == alfabetoMin[i]){
             num = i + 2;
-            //printf("%llu conversao e mod: %d\n", num, chaveN);
-            num = expModRap(num, chaveN, &chaveE);
-            //printf("%llu conversao mod", num);
+            num = expModRap(num, chaveN, &mult);
         }
     }
     
@@ -193,16 +197,13 @@ int descriptografar()
 int chavePrivada(int d, int n)
 {	
 	int *dBin[16];
-	*dBin = convBin(151, &dBin);
-
-	int abc = abc + expModRap(151, n, &dBin);
-	abc = abc%n;
-	printf("%d\n", abc);
-	printf("%d\n", n);
+	*dBin = convBin(d, &dBin);
+    
+	unsigned long long int abc;
 
 	char frase[tamanhoString], lixo;
 	int quant = 0;
-	//int tFrase = strlen(frase);
+
 	printf("Insira a quantidade de caracteres da mensagem: ");
 	scanf("%d", &quant);
 
@@ -216,39 +217,51 @@ int chavePrivada(int d, int n)
 	{
 		scanf("%d", &c_array[i]);
 
-		numCache = 1000;
-		printf("numcache - %i\n", numCache);
-		printf("array - %i\n", c_array[i]);
-		printf("d - %i\n", d);
-		o_array[i] = numCache%n;
+        abc = expModRap(c_array[i], n, &dBin);
 
-		//printf("%d", o_array[i]);
+        printf("%c", alfabetoMasc[abc-2]);
+
 	}
 }
 
 //Recebe a mensagem a ser encriptada
-int frase (int * fraseCifrada){
+int frase (int *fraseCifrada){
     char frase[tamanhoString], lixo;
-    int tFrase, chaveN, chaveE, *expBin[16];
+    int tFrase, chaveN, chaveE;
+    unsigned long long int *expBin[16];
     printf("");
     scanf("%c", &lixo);//Armazena o valor da tecla enter, pressionada durante a seleção da criptografia
     printf("\nDigite a mensagem:");
     gets(frase);
     
+
     tFrase = strlen(frase);
     int fraseCripto[tFrase]; //Vetor que vai receber os valores dos caracteres cifrados
+//    for(int i =0; i < tFrase; i++){
+//        printf("%c ", frase[i]);
+ //   }
 
     printf("\nAgora digite a chave publica recebebida.\nExemplo: 871 57\n\nDigite a chave publica: ");
     scanf("%d %d", &chaveN, &chaveE);
 
     *expBin = convBin(chaveE, &expBin);
-    printf("\n%d %d %d %d %d %d %d %d\n", expBin[0], expBin[1], expBin[2], expBin[3], expBin[4], expBin[5], expBin[6], expBin[7]);
+    printf("\n");
+    for (int i = 0; i < 16; i++)
+    {
+        printf("%d ", expBin[i]);
+    }
+    printf("\n");
+    //printf("\n%d %d %d %d %d %d %d %d\n", expBin[0], expBin[1], expBin[2], expBin[3], expBin[4], expBin[5], expBin[6], expBin[7]);
 
     printf("Tamanho da string: %d\n\n", tFrase);
     for (int i = 0; i < tFrase; i++){
         fraseCripto[i] = criptografar(frase[i], chaveN, &expBin);
         fraseCifrada[i] = fraseCripto[i];
     }
+//printf("\n");
+ //   for(int i =0; i < tFrase; i++){
+   //     printf("%c ", frase[i]);
+    //}
 
     for(int i = 0; i < tFrase; i++){
         printf("%d string\n", fraseCripto[i]);
@@ -258,7 +271,7 @@ int frase (int * fraseCifrada){
 }
 
 //converte um numero decimal para binário, no caso, converte o expoente para sua representação binária
-int convBin(int deci, int *binario){
+int convBin(int deci, int binario[]){
 
     for (int i = 0; i < 16; i++){
         if (deci % 2 == 0){
@@ -267,30 +280,27 @@ int convBin(int deci, int *binario){
             binario[i] = 1;
         }
         deci /= 2;
+        //printf(" %d b", binario[i]);
     }
     return *binario;
 }
 
 //faz a exponenciação modular rápida
-int expModRap(int base, int mod, int *exp){
-    int parcial = 1, mult[16], result;
+int expModRap(int base, int mod, int exp[]){
+    unsigned long long int parcial = 1, mult[16], result, recebe[16];
 
-    //printf("%d mod\n", mod);
-    //printf("\n%d\n", exp[1]);
-
+    for(int i = 0; i < 16; i++)
+        recebe[i] = exp[i];
+    
     for(int i = 0; i < 16; i++){
         mult[i] = 0;
         if(exp[i] == 1){
-        //printf("ola");
             mult[i] = pow(2, i);
             parcial *= expMod(mult[i], base, mod, 1);
-            //printf("%llu\n", parcial);
         }
     }
 
     result = parcial % mod;
-
-    //printf("%llu e %llu\n", result, parcial);
 
     return result;
 }
