@@ -109,7 +109,7 @@ int numeroPrimo(int num){
         return 1;
     }
 }    
- 
+ //Criptografa a frase digita, letra por letra
 int criptografar (char letra, int chaveN, int *chaveE){
     unsigned long long int num, parcial;
     int mult[16];
@@ -127,7 +127,8 @@ int criptografar (char letra, int chaveN, int *chaveE){
  
     return num;
 }
- 
+
+//Descriptografa a mensagem encriptada
 char descriptografar(char *mensDecifrada)
 {
     int p, q, e, checPrimo;
@@ -186,7 +187,7 @@ char descriptografar(char *mensDecifrada)
         }
     }
  
-    char aux[tamanhoString];
+    char aux[tamanhoString]; //String que recebe o conteúdo da descriptografia, afim de repassar para mensDecifrada
  
     for (int i = 0; i < tamanhoString; i++)
     {
@@ -200,7 +201,7 @@ char descriptografar(char *mensDecifrada)
     return mensDecifrada;
 }
  
-//Recebe e e n para calcular a chave privada e descriptografar a mensagem
+//Recebe e e n para calcular a chave privada e descriptografar a mensagem letra por letra
 char chavePrivada(int d, int n, char *mensDecifrada)
 {   
     int *dBin[16];
@@ -242,7 +243,7 @@ int frase (int *fraseCifrada){
     gets(frase);
  
  
-    tFrase = strlen(frase);
+    tFrase = strlen(frase); //Variavel que recebe a contagem de caracteres da mensagem a ser encriptada
     int fraseCripto[tFrase]; //Vetor que vai receber os valores dos caracteres cifrados
  
     printf("\nAgora digite a chave publica recebebida.\nExemplo: 871 57\n\nDigite a chave publica: ");
@@ -343,8 +344,6 @@ void SalvaEmTxt(int *chave, int a, char *message){
         printf("\nErro na abertura do arquivo!\n");
         return 1;
     }
- 
- 
 }
  
 int main(){
